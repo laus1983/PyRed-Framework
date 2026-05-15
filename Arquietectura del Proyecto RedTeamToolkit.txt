@@ -1,0 +1,8 @@
+RedTeamToolkit/
+│
+├── main.py                 # Orquestador y consola CLI
+│
+└── modules/
+    ├── __init__.py         # Archivo vacío para tratar la carpeta como paquete
+    ├── base_module.py      # Plantilla principal para todos los módulos
+    └── async_scanner.py    # Nuestro módulo estilo Nmap
