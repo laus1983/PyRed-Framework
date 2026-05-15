@@ -3,7 +3,12 @@ import importlib
 import os
 import sys
 import ctypes
+from dotenv import load_dotenv
 
+# Cargar variables de entorno desde el archivo .env automáticamente al iniciar
+load_dotenv()
+
+# Aseguramos que la ruta base esté en el sistema para importaciones
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 def check_privileges():
@@ -23,19 +28,18 @@ class RedTeamConsole(cmd.Cmd):
         super().__init__()
         # Verificación de privilegios al arrancar
         self.is_admin = check_privileges()
-        self.intro = "\n=== RedTeam Toolkit Core ===\n"
+        self.intro = "\n=== PyRed Framework (RedTeam Toolkit) ===\n"
         if self.is_admin:
             self.intro += "[+] Privilegios detectados: ROOT / ADMINISTRADOR.\n"
         else:
             self.intro += "[-] Privilegios detectados: USUARIO ESTÁNDAR.\n"
             self.intro += "[!] Advertencia: Módulos avanzados podrían fallar sin permisos elevados.\n"
-        self.intro += "Escribe 'help' o '?' para ver los comandos.\n"
+        self.intro += "Escribe 'help' o '?' para ver los comandos disponibles.\n"
 
         self.modules = {}
         self.current_module = None
         self.load_modules()
 
-    # ... (Mantén aquí el resto de las funciones: load_modules, do_list, do_use, do_show, do_set, do_run, do_back, do_exit que ya tenías) ...
     def load_modules(self):
         module_dir = 'modules'
         if not os.path.exists(module_dir):
@@ -56,12 +60,14 @@ class RedTeamConsole(cmd.Cmd):
                     print(f"  [-] Error al cargar {module_name}: {e}")
 
     def do_list(self, arg):
+        """Lista todos los módulos disponibles."""
         print("\nMódulos disponibles:")
         for name, instance in self.modules.items():
             print(f"  - {name}: {getattr(instance, 'description', 'Sin descripción')}")
         print()
 
     def do_use(self, arg):
+        """Selecciona un módulo. Ej: use hybrid_scanner"""
         if arg in self.modules:
             self.current_module = self.modules[arg]
             self.prompt = f"rt-toolkit ({arg}) > "
@@ -69,6 +75,7 @@ class RedTeamConsole(cmd.Cmd):
             print(f"[-] Módulo '{arg}' no encontrado.")
 
     def do_show(self, arg):
+        """Muestra opciones del módulo. Ej: show options"""
         if arg == "options" and self.current_module:
             print(f"\nOpciones para {self.current_module.__class__.__name__}:")
             print(f"{'Nombre':<15} {'Valor Actual':<20} {'Requerido':<10} {'Descripción'}")
@@ -82,6 +89,7 @@ class RedTeamConsole(cmd.Cmd):
             print("[-] Selecciona un módulo primero.")
 
     def do_set(self, arg):
+        """Configura una opción. Ej: set TARGET_DOMAIN example.com"""
         if not self.current_module:
             print("[-] Selecciona un módulo primero.")
             return
@@ -95,9 +103,10 @@ class RedTeamConsole(cmd.Cmd):
             else:
                 print(f"[-] Opción '{key}' inválida.")
         else:
-            print("[-] Uso incorrecto. Ej: set PORTS 1-1000")
+            print("[-] Uso incorrecto. Ej: set TARGET_DOMAIN hackthebox.eu")
 
     def do_run(self, arg):
+        """Ejecuta el módulo seleccionado."""
         if self.current_module:
             print(f"[*] Lanzando {self.current_module.__class__.__name__}...\n")
             self.current_module.run()
@@ -105,10 +114,12 @@ class RedTeamConsole(cmd.Cmd):
             print("[-] Ningún módulo seleccionado.")
 
     def do_back(self, arg):
+        """Regresa al menú principal."""
         self.current_module = None
         self.prompt = "rt-toolkit > "
 
     def do_exit(self, arg):
+        """Sale de la aplicación."""
         print("Saliendo...")
         return True
 
