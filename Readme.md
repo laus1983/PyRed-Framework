@@ -114,6 +114,14 @@ Fuzzer de directorios y archivos web híbrido y ultrarrápido.
 - Incluye un motor de respaldo asíncrono nativo en Python (`aiohttp`) en caso de no contar con binarios externos.
 - **Opciones principales:** `TARGET_URL`, `ENGINE`, `WORDLIST`, `EXTENSIONS`, `CONCURRENCY`.
 
+### 4. `tcp_handler`
+
+Listener TCP avanzado para atrapar conexiones entrantes (estilo Netcat).
+
+- Utiliza multiplexación (`select`) para I/O asíncrono no bloqueante, permitiendo manejar el teclado y la red simultáneamente sin congelar la consola.
+- Soporta la reutilización inmediata de puertos (`SO_REUSEADDR`) para prevenir errores en caso de cierres abruptos.
+- **Opciones principales:** `LHOST`, `LPORT`.
+
 ---
 
 ## 🧑‍💻 Desarrollo y Creación de Módulos
