@@ -10,7 +10,7 @@ El toolkit proporciona una interfaz de línea de comandos (CLI) interactiva e in
 - **Consola Interactiva:** Interfaz CLI completa con soporte para configuración de variables al vuelo (`set`, `show options`).
 - **Multiplataforma:** Compatible con Linux (ej. Arch Linux, Kali), Windows (incluye parches para bucles asíncronos nativos) y Android (vía Termux con soporte Root/tsu).
 - **Conciencia de Privilegios:** Auto-detección de permisos de Administrador/Root al inicio, alertando sobre limitaciones en módulos que requieran _Raw Sockets_.
-- **Ejecución Híbrida y Asíncrona:** Integración de motores ultrarrápidos nativos en Python (`asyncio`) con _wrappers_ que puentean herramientas robustas del sistema como Nmap.
+- **Ejecución Híbrida y Asíncrona:** Integración de motores ultrarrápidos nativos en Python (`asyncio`/`aiohttp`) con _wrappers_ que puentean herramientas robustas del sistema (Nmap, Gobuster, ffuf, etc.).
 
 ---
 
@@ -20,12 +20,13 @@ El toolkit proporciona una interfaz de línea de comandos (CLI) interactiva e in
 
 - Python 3.8 o superior.
 - Nmap (Recomendado para el módulo `hybrid_scanner`).
+- Gobuster, ffuf, dirb o Nikto (Opcionales para el módulo `web_fuzzer`).
 
 ### 1. Clonar el repositorio
 
 ```bash
-git clone [https://github.com/tu-usuario/RedTeamToolkit.git](https://github.com/tu-usuario/RedTeamToolkit.git)
-cd RedTeamToolkit
+git clone [https://github.com/tu-usuario/PyRed-Framework.git](https://github.com/tu-usuario/PyRed-Framework.git)
+cd PyRed-Framework
 ```
 
 ### 2. Instalación de dependencias
@@ -36,16 +37,22 @@ Se recomienda utilizar un entorno virtual, aunque no es estrictamente necesario 
 pip install -r requirements.txt
 ```
 
-_(Nota: Si aún no tienes un `requirements.txt`, simplemente ejecuta `pip install requests` para el módulo de Threat Intel)._
+### 3. Configuración de API Keys (.env)
 
-### 3. Ejecución en entornos móviles (Android / Termux)
+El framework utiliza un archivo `.env` en la raíz del proyecto para cargar automáticamente las credenciales necesarias en los módulos de OSINT. Crea el archivo `.env` con el siguiente formato:
+
+```env
+SHODAN_API_KEY=tu_clave_de_shodan
+```
+
+### 4. Ejecución en entornos móviles (Android / Termux)
 
 Para operar el toolkit desde un smartphone rooteado y aprovechar módulos que requieran _Raw Sockets_:
 
 ```bash
 pkg update && pkg upgrade
 pkg install python git nmap tsu -y
-pip install requests
+pip install -r requirements.txt
 # Ejecutar con privilegios root
 sudo python main.py
 # o alternativamente: tsu -c "python main.py"
@@ -61,7 +68,7 @@ Para iniciar la consola interactiva, ejecuta el archivo principal:
 # Inicio estándar
 python main.py
 
-# Inicio con privilegios (para escaneos SYN o detección de SO)
+# Inicio con privilegios (para escaneos avanzados)
 sudo python main.py
 ```
 
@@ -89,17 +96,23 @@ Una vez dentro del prompt `rt-toolkit >`, tienes a disposición los siguientes c
 Un escáner de puertos y servicios que se adapta al entorno.
 
 - Si Nmap está instalado, actúa como un orquestador en tiempo real que soporta todos los _flags_ nativos (ej. `-sS -O -sV -p-`).
-- Si Nmap no está disponible (o se carece de privilegios), realiza un _fallback_ a un motor asíncrono puro en Python (`asyncio`) capaz de escanear miles de puertos por segundo con _Banner Grabbing_ básico.
+- Si no está disponible, realiza un _fallback_ a un motor asíncrono puro en Python (`asyncio`) capaz de escanear miles de puertos por segundo.
+- **Opciones principales:** `TARGET_IP`, `ENGINE` (`nmap` o `python`), `NMAP_ARGS`, `PORTS`.
 
-**Opciones principales:** `TARGET_IP`, `ENGINE` (`nmap` o `python`), `NMAP_ARGS`, `PORTS`.
+### 2. `osint_recon`
 
-### 2. `threat_intel`
+Reconocimiento pasivo de dominios, DNS y subdominios sin alertar al objetivo.
 
-Módulo de recolección de inteligencia de amenazas (OSINT/IoC). Realiza consultas concurrentes a múltiples bases de datos de seguridad para perfilar una dirección IP.
+- **Integraciones:** Certificate Transparency (`crt.sh`), HackerTarget, y Shodan.
+- **Opciones principales:** `TARGET_DOMAIN`, `FIND_SUBDOMAINS`, `DNS_ENUM`, `USE_SHODAN`.
 
-- **Integraciones actuales:** VirusTotal, AbuseIPDB, Trend Vision One.
+### 3. `web_fuzzer`
 
-**Opciones principales:** `TARGET_IP`, `VT_API_KEY`, `ABUSE_API_KEY`, `TREND_API_KEY`.
+Fuzzer de directorios y archivos web híbrido y ultrarrápido.
+
+- Capaz de orquestar herramientas de la industria como `gobuster`, `ffuf`, `dirb` y `nikto`.
+- Incluye un motor de respaldo asíncrono nativo en Python (`aiohttp`) en caso de no contar con binarios externos.
+- **Opciones principales:** `TARGET_URL`, `ENGINE`, `WORDLIST`, `EXTENSIONS`, `CONCURRENCY`.
 
 ---
 
