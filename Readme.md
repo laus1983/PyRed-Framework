@@ -25,7 +25,7 @@ El toolkit proporciona una interfaz de línea de comandos (CLI) interactiva e in
 ### 1. Clonar el repositorio
 
 ```bash
-git clone [https://github.com/tu-usuario/PyRed-Framework.git](https://github.com/tu-usuario/PyRed-Framework.git)
+git clone [https://github.com/laus1983/PyRed-Framework.git](https://github.com/laus1983/PyRed-Framework.git)
 cd PyRed-Framework
 ```
 
